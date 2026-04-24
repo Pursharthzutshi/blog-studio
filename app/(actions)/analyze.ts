@@ -1,7 +1,8 @@
 "use server"
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js"
+import { server as myLocalServer } from "../mcp/index"
 
 export async function AnalyzeBlogAction(prevState: any, formData: FormData) {
     try {
@@ -11,41 +12,48 @@ export async function AnalyzeBlogAction(prevState: any, formData: FormData) {
             return { state: "error", message: "Please provide a valid Blog ID", data: null }
         }
 
-        // 1. Tell the Client to spawn your MCP server file as a background process
-        const transport = new StdioClientTransport({
-            command: "npx",
-            args: ["tsx", "app/mcp/index.ts"]
-        })
+        // ✅ Using Direct Memory Pipelines for Vercel compatibility
+        const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
 
-        // 2. Initialize the MCP Client
-        const client = new Client(
-            { name: "my-nextjs-frontend", version: "1.0.0" },
-            { capabilities: {} }
-        )
+        try {
+            // 1. Ensure server is not already connected
+            try {
+                await (myLocalServer as any).transport?.close();
+            } catch (e) { }
 
-        // 3. Connect to the background process
-        await client.connect(transport)
+            // 2. Connect the local server
+            await myLocalServer.connect(serverTransport)
 
-        // 4. Request the 'analyze-blog' tool with the exact ID from your web form!
-        const response: any = await client.callTool({
-            name: "analyze-blog",
-            arguments: { id: blogId }
-        })
+            // 3. Initialize and connect the Client
+            const client = new Client(
+                { name: "blog-website", version: "1.0.0" },
+                { capabilities: {} }
+            )
+            await client.connect(clientTransport)
 
-        // Grab the string response sent back by the MCP Tool
-        const mcpAnalysisResult = response.content[0].text
+            // 4. Call the 'analyze-blog' tool
+            const result: any = await client.callTool({
+                name: "analyze-blog",
+                arguments: { id: blogId }
+            })
 
-        return {
-            state: "success",
-            message: mcpAnalysisResult,
-            data: null
+            return {
+                state: "success",
+                message: result.content[0].text,
+                data: result
+            }
+        } finally {
+            // ⭐ Always close the transports
+            await clientTransport.close().catch(console.error)
+            await serverTransport.close().catch(console.error)
         }
 
-    } catch (error) {
-        console.error("MCP Client Error:", error)
+    } catch (err: any) {
+        console.error("MCP ERROR:", err)
+
         return {
             state: "error",
-            message: "Failed to analyze blog with MCP Tool.",
+            message: err.message || "Something went wrong",
             data: null
         }
     }

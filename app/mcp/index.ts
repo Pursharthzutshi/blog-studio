@@ -2,12 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById } from "../lib/dal/blog"
-import fs from "fs"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-
-process.on("uncaughtException", (err) => {
-    fs.writeFileSync("mcp-debug.log", `CRASH: ${err.stack || err.message}\n`)
-})
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });

@@ -1,6 +1,5 @@
 "use server"
 
-import path from "path"
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js"
 import { server as myLocalServer } from "../mcp/index"
