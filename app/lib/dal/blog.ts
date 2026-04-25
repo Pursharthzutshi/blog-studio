@@ -1,4 +1,4 @@
-import { blogScehmaTable, connectDB } from "../../models/db"
+import { blogAnalysisSchemaTable, blogScehmaTable, connectDB } from "../../models/db"
 
 export async function InsertBlogToDB(title: string, description: string) {
     await connectDB()
@@ -10,6 +10,13 @@ export async function InsertBlogToDB(title: string, description: string) {
 
     return result
 }
+
+
+// export async function AnalyzeBlog(id: string) {
+
+//     const analyzeBlogResult = await blogAnalysisSchemaTable(id)
+//     return analyzeBlogResult;
+// }
 
 
 export async function FetchBlogFromDB() {

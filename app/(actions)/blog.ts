@@ -30,7 +30,9 @@ export async function DeleteBlog(prevState: any, formData: FormData) {
         data: JSON.parse(JSON.stringify(result))
     }
 
+
 }
+
 
 
 export async function DeleteBlogAction(formData: FormData) {

@@ -3,9 +3,16 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById } from "../lib/dal/blog"
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { blogAnalysisSchemaTable } from "../models/db"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+const model = genAI.getGenerativeModel({
+    model: "gemini-flash-latest",
+    generationConfig: {
+        maxOutputTokens: 800, // Hard limit to control costs and prevent overly long responses
+        temperature: 0.7,
+    }
+});
 
 export const server = new McpServer({
     name: "test",
@@ -20,7 +27,7 @@ server.tool("create-blog", "add a new blog", {
     try {
         console.error(`[MCP] Starting Gemini generation for titled: ${title}`);
 
-        const prompt = `Write a 5-paragraph professional blog post titled '${title}'. It should be about: ${description}. Please format the response in clean HTML paragraphs without any markdown code blocks.`;
+        const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Please format the response in clean HTML paragraphs without any markdown code blocks. Keep the total length under 400 words.`;
         const aiResult = await model.generateContent(prompt);
         const AI_GENERATED_BLOG = aiResult.response.text();
 
@@ -45,38 +52,43 @@ server.tool("create-blog", "add a new blog", {
 })
 
 server.tool("analyze-blog", "analyze a existing blog", { id: z.string() }, async ({ id }) => {
-
     try {
+        const blog = await FetchBlogFromDBById(id)
 
-        const fetchBlogs = await FetchBlogFromDBById(id)
-        if (!fetchBlogs) {
-
+        if (!blog) {
             return {
-                content: [
-                    { type: "text" as const, text: "Blog not found" }
-                ]
-            }
-        } else {
-
-            const prompt = `Analyze this blog ${fetchBlogs[0].content.description}`
-            const aiPromptAnalysis = await model.generateContent(prompt);
-            const AI_GENERATED_Analysis = aiPromptAnalysis.response.text();
-
-            return {
-                content: [
-                    { type: "text" as const, text: `${AI_GENERATED_Analysis} Blog successfully analyzed with Gemini AI!` }
-
-                ]
+                content: [{ type: "text" as const, text: "Blog not found in database. Please check the ID." }]
             }
         }
 
-    } catch (error) {
+        console.error(`[MCP] Analyzing blog: ${blog.title}`);
+
+        const prompt = `Provide a concise (maximum 150 words) professional analysis of this blog content: ${blog.description}. Focus on key takeaways and tone.`
+
+        const aiPromptAnalysis = await model.generateContent(prompt);
+        const AI_ANALYSIS_TEXT = aiPromptAnalysis.response.text();
+
+        // Match the schema in models/db.ts (blogId, blogAnalysis)
+        const analysisEntry = await blogAnalysisSchemaTable.create({ 
+            blogId: id, 
+            blogAnalysis: AI_ANALYSIS_TEXT 
+        });
+
+        console.error(`[MCP] Analysis saved to database for blog ID: ${id}`);
+
         return {
             content: [
-                { type: "text" as const, text: "Blog analysis is failed" }
+                { type: "text" as const, text: `Successfully analyzed "${blog.title}".\n\n${AI_ANALYSIS_TEXT}` }
             ]
         }
 
+    } catch (error: any) {
+        console.error(`[MCP] Analysis Tool Error: ${error.message}`);
+        return {
+            content: [
+                { type: "text" as const, text: `Blog analysis failed: ${error.message}` }
+            ]
+        }
     }
 })
 

@@ -1,30 +1,26 @@
 import { FetchBlogFromDB } from "../lib/dal/blog"
-import { DeleteBlogAction } from "../(actions)/blog"
+import BlogList from "./BlogList"
 
 export default async function HomePage() {
-
     const blogs = await FetchBlogFromDB();
 
     return (
-        <div>
-            <h3>Blogs</h3>
+        <div className="space-y-12">
+            <div className="text-center space-y-4">
+                <h1 className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+                    Community Blogs
+                </h1>
+                <p className="max-w-xl mx-auto">Explore the latest thoughts, AI-generated insights, and stories from our community.</p>
+            </div>
 
-            {
-                blogs.map((blog) => {
-                    return (
-                        <div key={blog._id.toString()}>
-                            <ul>
-                                <li>{blog.title}</li>
-                                <li>{blog.description}</li>
-                            </ul>
-                            <form action={DeleteBlogAction}>
-                                <input type="hidden" name="blog-id" value={blog._id.toString()} />
-                                <button type="submit">Delete</button>
-                            </form>
-                        </div>
-                    )
-                })
-            }
+            {/* Pass server-side data to the client-side list component */}
+            <BlogList blogs={JSON.parse(JSON.stringify(blogs))} />
+
+            {blogs.length === 0 && (
+                <div className="text-center p-24 glass-card">
+                    <p>No blogs found. Start by creating one!</p>
+                </div>
+            )}
         </div>
     )
 }

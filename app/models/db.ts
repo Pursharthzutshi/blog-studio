@@ -43,8 +43,15 @@ const usersAccount = new mongoose.Schema({
     password: String
 })
 
+const blogAnalysis = new mongoose.Schema({
+    blogId: String,
+    blogAnalysis: String
+})
+
 const blogScehmaTable = mongoose.models.blogSchema || mongoose.model("blogSchema", blogSchema, "blogScehma")
 
 const usersAccountSchemaTable = mongoose.models.usersAccountSchema || mongoose.model("usersAccountSchema", usersAccount, "usersAccountSchema")
 
-export { blogScehmaTable, usersAccountSchemaTable }
+const blogAnalysisSchemaTable = mongoose.models.blogAnalysisSchema || mongoose.model("blogAnalysisSchema", blogAnalysis, "blogAnalysisSchema")
+
+export { blogScehmaTable, usersAccountSchemaTable, blogAnalysisSchemaTable }
