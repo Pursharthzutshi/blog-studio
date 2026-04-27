@@ -10,6 +10,8 @@ export default function AddNewBlog() {
         data: null
     }
 
+    // Clean — no need to fetch user token on the client anymore.
+    // InsertBlog reads the session cookie directly on the server.
     const [state, formAction, isPending] = useActionState(InsertBlog, initialState)
 
     return (
@@ -56,11 +58,10 @@ export default function AddNewBlog() {
                 </form>
 
                 {state?.message && (
-                    <div className={`mt-10 p-6 rounded-2xl text-center text-sm font-medium border animate-in zoom-in-95 duration-500 ${
-                        state.state === "error" 
-                        ? "bg-red-500/5 text-red-400 border-red-500/10" 
+                    <div className={`mt-10 p-6 rounded-2xl text-center text-sm font-medium border animate-in zoom-in-95 duration-500 ${state.state === "error"
+                        ? "bg-red-500/5 text-red-400 border-red-500/10"
                         : "bg-green-500/5 text-green-400 border-green-500/10"
-                    }`}>
+                        }`}>
                         {state?.state === "success" ? "✓ Blog published successfully!" : state?.message}
                     </div>
                 )}

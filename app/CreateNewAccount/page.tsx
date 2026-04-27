@@ -62,11 +62,10 @@ export default function CreateNewAccount() {
                 </form>
 
                 {state?.message && (
-                    <div className={`mt-8 p-4 rounded-2xl text-center text-xs font-medium border animate-in fade-in slide-in-from-top-4 ${
-                        state.state === "error" 
-                        ? "bg-red-500/5 text-red-400 border-red-500/20" 
-                        : "bg-green-500/5 text-green-400 border-green-500/20"
-                    }`}>
+                    <div className={`mt-8 p-4 rounded-2xl text-center text-xs font-medium border animate-in fade-in slide-in-from-top-4 ${state.state === "error"
+                            ? "bg-red-500/5 text-red-400 border-red-500/20"
+                            : "bg-green-500/5 text-green-400 border-green-500/20"
+                        }`}>
                         {state.message}
                     </div>
                 )}

@@ -30,6 +30,7 @@ export async function connectDB() {
 
 const blogSchema = new mongoose.Schema({
     uid: String,
+    emailId: String,
     title: String,
     description: String
 })
@@ -44,6 +45,7 @@ const usersAccount = new mongoose.Schema({
 })
 
 const blogAnalysis = new mongoose.Schema({
+    emailId: String,
     blogId: String,
     blogAnalysis: String
 })

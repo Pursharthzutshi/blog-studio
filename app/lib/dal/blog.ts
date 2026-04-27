@@ -1,11 +1,12 @@
 import { blogAnalysisSchemaTable, blogScehmaTable, connectDB } from "../../models/db"
 
-export async function InsertBlogToDB(title: string, description: string) {
+export async function InsertBlogToDB(title: string, description: string, emailId: string = "") {
     await connectDB()
 
     const result = await blogScehmaTable.create({
         title: title,
-        description: description
+        description: description,
+        emailId: emailId
     })
 
     return result
