@@ -2,7 +2,6 @@
 
 import { useActionState, useState } from "react"
 import Link from "next/link"
-import { RewriteBlogInDB } from "@/app/lib/dal/blog"
 import { RewriteBlogWithMCP } from "@/app/(actions)/rewriteblogwithmcp"
 
 type BlogData = {
@@ -13,8 +12,7 @@ type BlogData = {
 }
 
 export default function BlogDetailClient({ blog }: { blog: BlogData }) {
-
-    const initialState: any | null = {
+    const initialState: any = {
         state: "",
         message: "",
         data: null
@@ -23,110 +21,109 @@ export default function BlogDetailClient({ blog }: { blog: BlogData }) {
     const [highlightedText, setHighlightedText] = useState<string>("")
     const [state, formAction, isPending] = useActionState(RewriteBlogWithMCP.bind(null, highlightedText, blog.id), initialState)
 
-    // const handleTextSelection = () => {
-    //     const selected = window.getSelection()?.toString() || ""
-    //     if (selected.trim()) {
-    //         setHighlightedText(selected.trim())
-    //         console.log("Selected text:", selected.trim())
-    //     }
-    // }
-
-    console.log(state)
-
     const highlightText = () => {
         const selected = window.getSelection()?.toString() || ""
         if (selected.trim()) {
             setHighlightedText(selected.trim())
-            console.log("Selected text:", selected.trim())
         }
     }
 
     return (
-        <div className="py-12 max-w-3xl mx-auto">
+        <div className="py-8 max-w-3xl mx-auto">
             {/* Back button */}
             <Link
                 href="/AllBlogsPage"
-                className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-gray-500 hover:text-purple-400 transition-colors mb-12 group"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-10"
             >
-                <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                Back to All Blogs
+                ← Back to All Blogs
             </Link>
 
-            <article className="glass-card p-10 md:p-14 space-y-8">
+            <article className="card p-8 md:p-12 space-y-8">
                 {/* Header */}
-                <div className="space-y-5 pb-8 border-b border-white/5">
+                <div className="space-y-4 pb-6 border-b border-[var(--border)]">
                     <div className="flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
-                        <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500">
+                        <span className="badge text-[10px]">
                             #{blog.id.slice(-6).toUpperCase()}
                         </span>
                         {blog.emailId && (
-                            <>
-                                <span className="text-gray-700">·</span>
-                                <span className="text-[10px] text-gray-600 truncate">{blog.emailId}</span>
-                            </>
+                            <span className="text-[11px] text-[var(--text-muted)]">{blog.emailId}</span>
                         )}
                     </div>
 
-                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+                    <h1 className="text-2xl md:text-4xl font-bold tracking-tight leading-tight">
                         {blog.title}
                     </h1>
                 </div>
 
-                {/* Full blog content — select text to highlight */}
+                {/* Blog content — select text to highlight */}
                 <div
                     onMouseUp={highlightText}
                     onTouchEnd={highlightText}
-                    className="prose-content space-y-5 cursor-text select-text"
+                    className="prose-content cursor-text select-text space-y-4"
                 >
                     {blog.description
                         .split(/\n\n+/)
                         .filter((para) => para.trim())
                         .map((para, i) => (
-
-                            <p key={i} className="text-gray-300 text-base md:text-lg leading-relaxed">
-                                {para.trim()}
-                            </p>
+                            <p key={i}>{para.trim()}</p>
                         ))
                     }
                 </div>
 
-                <form action={formAction}>
-
-                    {
-                        highlightedText.length > 0 && <button type="submit">Refine this text</button>
-                    }
-
-                </form>
-
-                {/* Highlighted text indicator */}
+                {/* Refine form */}
                 {highlightedText && (
-                    <div className="mt-6 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-3">
-                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-purple-400">
-                            ✦ Selected Text
+                    <div className="p-5 rounded-xl bg-[var(--accent-soft)] border border-[rgba(245,158,11,0.2)] space-y-4">
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+                                ✦ Selected Text
+                            </p>
+                            <button
+                                onClick={() => setHighlightedText("")}
+                                className="text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors border-none bg-transparent px-0 py-0"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">
+                            &ldquo;{highlightedText}&rdquo;
                         </p>
-                        <p className="text-sm text-gray-300 italic">"{highlightedText}"</p>
-                        <button
-                            onClick={() => setHighlightedText("")}
-                            className="text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest"
-                        >
-                            Clear
-                        </button>
+                        <form action={formAction}>
+                            <button
+                                type="submit"
+                                disabled={isPending}
+                                className="py-2.5 px-6 text-xs font-bold rounded-lg"
+                            >
+                                {isPending ? (
+                                    <span className="flex items-center gap-2">
+                                        <span className="spinner" style={{ width: '12px', height: '12px' }} />
+                                        Refining...
+                                    </span>
+                                ) : (
+                                    "Refine with AI →"
+                                )}
+                            </button>
+                        </form>
+
+                        {state?.message && (
+                            <p className={`text-xs font-medium ${state.state === 'success' ? 'text-[var(--success)]' : 'text-[var(--danger)]'}`}>
+                                {state.message}
+                            </p>
+                        )}
                     </div>
                 )}
             </article>
 
             {/* Bottom nav */}
-            <div className="mt-12 flex justify-between items-center">
+            <div className="mt-10 flex justify-between items-center">
                 <Link
                     href="/AllBlogsPage"
-                    className="text-[11px] uppercase tracking-[0.2em] font-bold text-gray-500 hover:text-white transition-colors"
+                    className="text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                     ← All Blogs
                 </Link>
                 <Link
                     href="/CreateBlogByMCP"
-                    className="btn py-3 px-8 text-[11px] uppercase tracking-[0.2em]"
+                    className="btn-primary py-2.5 px-6 text-xs font-bold rounded-lg"
                 >
                     ✦ Create with AI
                 </Link>

@@ -13,55 +13,53 @@ export default function AnalyzeBlog() {
     const [state, formAction, isPending] = useActionState(AnalyzeBlogAction, initialState)
 
     return (
-        <div className="max-w-3xl mx-auto w-full">
-            <div className="text-center space-y-4 mb-12">
-                <h1 className="bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
-                    Blog Intelligence
+        <div className="max-w-2xl mx-auto w-full pt-8">
+            <div className="space-y-3 mb-10">
+                <div className="accent-line mb-6" />
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Blog Analysis
                 </h1>
-                <p className="max-w-xl mx-auto">
-                    Decrypt the DNA of your content. Enter a Blog ID for a comprehensive AI-driven analysis.
+                <p className="text-sm text-[var(--text-muted)] max-w-lg">
+                    Enter a blog ID and get an AI-driven content analysis in seconds.
                 </p>
             </div>
 
-            <div className="glass-card p-10 relative overflow-hidden group">
-                <form action={formAction} className="space-y-8 relative z-10">
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 ml-1">
-                            Blog Identifier (ID)
+            <div className="card p-8">
+                <form action={formAction} className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
+                            Blog ID
                         </label>
-                        <div className="relative group">
-                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl opacity-30 group-focus-within:opacity-100 group-focus-within:text-purple-500 transition-all">#</span>
-                            <input 
-                                name="blog-id" 
-                                type="text" 
-                                placeholder="64f1..." 
-                                className="pl-12 bg-white/5 border-white/5 focus:bg-white/10 font-mono tracking-wider"
-                                required
-                            />
-                        </div>
+                        <input
+                            name="blog-id"
+                            type="text"
+                            placeholder="Paste the blog's MongoDB ID"
+                            className="font-mono tracking-wider"
+                            required
+                        />
                     </div>
-                    
-                    <button type="submit" disabled={isPending} className="w-full py-5 text-sm uppercase tracking-[0.3em] font-black">
+
+                    <button type="submit" disabled={isPending} className="w-full py-3.5 text-sm font-bold">
                         {isPending ? (
-                            <span className="flex items-center justify-center gap-4">
-                                <span className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                <span>Scanning Data...</span>
+                            <span className="flex items-center justify-center gap-2">
+                                <span className="spinner" style={{ width: '14px', height: '14px' }} />
+                                Analyzing...
                             </span>
-                        ) : "Initiate Deep Analysis"}
+                        ) : "Analyze →"}
                     </button>
                 </form>
 
                 {state?.message && !isPending && (
-                    <div className={`mt-10 p-8 rounded-2xl border animate-in slide-in-from-bottom-8 duration-700 ${
-                        state.state === 'error' 
-                        ? 'bg-red-500/5 border-red-500/10 text-red-400' 
-                        : 'bg-purple-500/5 border-purple-500/10 text-gray-100'
+                    <div className={`mt-6 rounded-xl border ${
+                        state.state === 'error'
+                        ? 'bg-red-500/5 border-red-500/15'
+                        : 'bg-[var(--bg-surface)] border-[var(--border)]'
                     }`}>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="h-6 w-px bg-purple-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Intelligence Report</h3>
+                        <div className="flex items-center gap-2 px-5 pt-4 pb-2">
+                            <div className="accent-line" style={{ width: '20px', height: '2px' }} />
+                            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Analysis Report</span>
                         </div>
-                        <p className="leading-relaxed whitespace-pre-wrap text-sm text-gray-200 bg-black/20 p-6 rounded-xl border border-white/5">
+                        <p className="px-5 pb-5 leading-relaxed whitespace-pre-wrap text-sm text-[var(--text-secondary)]">
                             {state.message}
                         </p>
                     </div>
@@ -70,4 +68,3 @@ export default function AnalyzeBlog() {
         </div>
     )
 }
-

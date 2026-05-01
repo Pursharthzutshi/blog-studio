@@ -15,53 +15,60 @@ export default function AddNewBlog() {
     const [state, formAction, isPending] = useActionState(InsertBlog, initialState)
 
     return (
-        <div className="max-w-3xl mx-auto w-full">
-            <div className="text-center space-y-4 mb-12">
-                <h1 className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-                    Manual Entry
+        <div className="max-w-2xl mx-auto w-full pt-8">
+            <div className="space-y-3 mb-10">
+                <div className="accent-line mb-6" />
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Write Manually
                 </h1>
-                <p className="max-w-md mx-auto">
-                    Sometimes the human touch is irreplaceable. Craft your story manually here.
+                <p className="text-sm text-[var(--text-muted)] max-w-lg">
+                    Sometimes the human touch is irreplaceable. Craft your story here.
                 </p>
             </div>
 
-            <div className="glass-card p-10 relative overflow-hidden">
-                <form action={formAction} className="space-y-8 relative z-10">
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">
-                            Article Title
+            <div className="card p-8">
+                <form action={formAction} className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
+                            Title
                         </label>
                         <input
                             placeholder="Enter a compelling title"
-                            type='text'
+                            type="text"
                             name="blog-title"
-                            className="bg-white/5 border-white/5 focus:bg-white/10 text-lg py-4"
+                            className="text-base py-3.5"
                             required
                         />
                     </div>
 
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">
-                            Body Content
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
+                            Content
                         </label>
                         <textarea
-                            placeholder="Type or paste your blog content here..."
+                            placeholder="Write your blog content here..."
                             name="blog-description"
-                            className="min-h-[300px] bg-white/5 border-white/5 focus:bg-white/10 resize-none py-4 leading-relaxed"
+                            className="min-h-[280px] resize-none py-3.5 leading-relaxed"
                             required
                         />
                     </div>
 
-                    <button type="submit" disabled={isPending} className="w-full py-5 text-sm uppercase tracking-[0.2em] font-black group">
-                        {isPending ? "Publishing..." : "Publish to Community"}
+                    <button type="submit" disabled={isPending} className="w-full py-3.5 text-sm font-bold">
+                        {isPending ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <span className="spinner" style={{ width: '14px', height: '14px' }} />
+                                Publishing...
+                            </span>
+                        ) : "Publish →"}
                     </button>
                 </form>
 
                 {state?.message && (
-                    <div className={`mt-10 p-6 rounded-2xl text-center text-sm font-medium border animate-in zoom-in-95 duration-500 ${state.state === "error"
-                        ? "bg-red-500/5 text-red-400 border-red-500/10"
-                        : "bg-green-500/5 text-green-400 border-green-500/10"
-                        }`}>
+                    <div className={`mt-6 p-4 rounded-xl text-center text-sm font-medium border ${
+                        state.state === "error"
+                        ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
+                        : "bg-green-500/5 text-[var(--success)] border-green-500/15"
+                    }`}>
                         {state?.state === "success" ? "✓ Blog published successfully!" : state?.message}
                     </div>
                 )}

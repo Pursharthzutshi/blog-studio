@@ -14,86 +14,75 @@ export default function LoginPage() {
     const [state, formAction, isPending] = useActionState(LoginUser, initialState)
 
     return (
-        <div className="max-w-[440px] mx-auto w-full">
-            <div className="text-center space-y-4 mb-10">
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
-                    Welcome Back
+        <div className="max-w-[420px] mx-auto w-full pt-8">
+            <div className="text-center space-y-3 mb-10">
+                <div className="accent-line mx-auto mb-6" />
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Welcome back
                 </h1>
-                <p className="text-gray-400">
-                    Sign in to your account and continue creating.
+                <p className="text-sm text-[var(--text-muted)]">
+                    Sign in to continue creating.
                 </p>
             </div>
 
-            <div className="glass-card p-10 relative overflow-hidden">
-                {/* Decorative element */}
-                <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 blur-[80px] rounded-full" />
-                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-600/10 blur-[80px] rounded-full" />
-
-                <form action={formAction} className="space-y-6 relative z-10">
+            <div className="card p-8">
+                <form action={formAction} className="space-y-5">
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">
-                            Email Address
+                        <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
+                            Email
                         </label>
-                        <div className="relative group">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors">
-                                @
-                            </span>
-                            <input 
-                                type="email" 
-                                placeholder="you@example.com" 
-                                name="email-id" 
-                                className="pl-11"
-                                required 
-                            />
-                        </div>
+                        <input
+                            type="email"
+                            placeholder="you@example.com"
+                            name="email-id"
+                            required
+                        />
                     </div>
 
                     <div className="space-y-2">
-                        <div className="flex justify-between items-center px-1">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
                                 Password
                             </label>
-                            <Link href="#" className="text-[10px] uppercase tracking-widest font-black text-purple-500 hover:text-purple-400">
+                            <Link href="#" className="text-[11px] text-[var(--accent)] hover:underline font-medium">
                                 Forgot?
                             </Link>
                         </div>
-                        <div className="relative group">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors">
-                                🔒
-                            </span>
-                            <input 
-                                type="password" 
-                                placeholder="••••••••" 
-                                name="password" 
-                                className="pl-11"
-                                required 
-                            />
-                        </div>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            name="password"
+                            required
+                        />
                     </div>
 
-                    <button type="submit" disabled={isPending} className="w-full py-4 text-sm uppercase tracking-widest font-black">
-                        {isPending ? "Authenticating..." : "Sign In to Studio"}
+                    <button type="submit" disabled={isPending} className="w-full py-3 text-sm font-bold mt-2">
+                        {isPending ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <span className="spinner" style={{ width: '14px', height: '14px' }} />
+                                Signing in...
+                            </span>
+                        ) : "Sign In"}
                     </button>
                 </form>
 
                 {state.message && (
-                    <div className={`mt-8 p-4 rounded-2xl text-center text-xs font-medium border animate-in fade-in slide-in-from-top-4 ${
-                        state.state === "error" 
-                        ? "bg-red-500/5 text-red-400 border-red-500/20" 
-                        : "bg-green-500/5 text-green-400 border-green-500/20"
+                    <div className={`mt-6 p-3.5 rounded-xl text-center text-xs font-medium border ${
+                        state.state === "error"
+                        ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
+                        : "bg-green-500/5 text-[var(--success)] border-green-500/15"
                     }`}>
                         {state.message}
                     </div>
                 )}
             </div>
 
-            <p className="text-center mt-8 text-sm text-gray-500">
-                Don't have an account?{" "}
-                <Link href="/CreateNewAccount" className="text-white font-semibold hover:text-purple-400 transition-colors">
-                    Join the community
+            <p className="text-center mt-6 text-sm text-[var(--text-muted)]">
+                Don&apos;t have an account?{" "}
+                <Link href="/CreateNewAccount" className="text-[var(--accent)] hover:underline font-medium">
+                    Sign up
                 </Link>
             </p>
         </div>
     )
 }
-

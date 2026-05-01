@@ -7,30 +7,28 @@ export default async function HomePage() {
     const GetUserTokenResult = await GetUserToken();
 
     return (
-        <div className="py-12 space-y-16">
-            {/* Hero Header */}
-            <div className="text-center space-y-5">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-                    </span>
-                    Live Feed
+        <div className="py-8 space-y-12">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div className="space-y-3">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                        All Blogs
+                    </h1>
+                    <p className="text-[var(--text-muted)] text-sm">
+                        Explore the latest posts from our community of creators.
+                    </p>
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent leading-none">
-                    Community Blogs
-                </h1>
-
-                <p className="max-w-xl mx-auto text-gray-400 text-base md:text-lg leading-relaxed">
-                    Explore the latest thoughts, AI-generated insights, and stories from our distributed network of creators.
-                </p>
-
-                {GetUserTokenResult && (
-                    <span className="inline-block text-[10px] uppercase tracking-[0.3em] font-bold text-purple-400/70 border border-purple-500/20 px-4 py-1.5 rounded-full bg-purple-500/5">
-                        ✦ Welcome Back, Blogger
+                <div className="flex items-center gap-3">
+                    <span className="badge">
+                        {blogs.length} {blogs.length === 1 ? 'post' : 'posts'}
                     </span>
-                )}
+                    {GetUserTokenResult && (
+                        <span className="badge badge-accent">
+                            ✦ Logged In
+                        </span>
+                    )}
+                </div>
             </div>
 
             {/* Blog Grid */}
@@ -38,9 +36,9 @@ export default async function HomePage() {
 
             {/* Empty state */}
             {blogs.length === 0 && (
-                <div className="text-center p-24 glass-card border-dashed border-white/10">
-                    <div className="text-5xl mb-6">📭</div>
-                    <p className="text-gray-400 font-medium text-lg">No blogs yet. Start by creating one!</p>
+                <div className="text-center py-24 card border-dashed">
+                    <div className="text-4xl mb-4">📝</div>
+                    <p className="text-[var(--text-muted)] font-medium">No blogs yet. Start by creating one!</p>
                 </div>
             )}
         </div>
