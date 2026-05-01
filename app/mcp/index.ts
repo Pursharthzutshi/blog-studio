@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
-import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById } from "../lib/dal/blog"
+import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById, RewriteBlogInDB } from "../lib/dal/blog"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { blogAnalysisSchemaTable } from "../models/db"
 
@@ -27,9 +27,9 @@ server.tool("create-blog", "add a new blog", {
     try {
         console.error(`[MCP] Starting Gemini generation for titled: ${title}`);
 
-        const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Please format the response in clean HTML paragraphs without any markdown code blocks. Keep the total length under 400 words.`;
+        const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Return only plain text. Do NOT use any HTML tags, markdown symbols, or code blocks. Separate paragraphs with a blank line. Keep the total length under 400 words.`;
         const aiResult = await model.generateContent(prompt);
-        const AI_GENERATED_BLOG = aiResult.response.text();
+        const AI_GENERATED_BLOG = aiResult.response.text().trim();
 
         console.error(`[MCP] Gemini generation complete. Length: ${AI_GENERATED_BLOG.length}`);
 
@@ -69,9 +69,9 @@ server.tool("analyze-blog", "analyze a existing blog", { id: z.string() }, async
         const AI_ANALYSIS_TEXT = aiPromptAnalysis.response.text();
 
         // Match the schema in models/db.ts (blogId, blogAnalysis)
-        const analysisEntry = await blogAnalysisSchemaTable.create({ 
-            blogId: id, 
-            blogAnalysis: AI_ANALYSIS_TEXT 
+        const analysisEntry = await blogAnalysisSchemaTable.create({
+            blogId: id,
+            blogAnalysis: AI_ANALYSIS_TEXT
         });
 
         console.error(`[MCP] Analysis saved to database for blog ID: ${id}`);
@@ -87,6 +87,45 @@ server.tool("analyze-blog", "analyze a existing blog", { id: z.string() }, async
         return {
             content: [
                 { type: "text" as const, text: `Blog analysis failed: ${error.message}` }
+            ]
+        }
+    }
+})
+
+
+server.tool("rewrite-blog", "Rewrite the existing blog", {
+    id: z.string(),
+    highlightedText: z.string()
+}, async ({ id, highlightedText }) => {
+    try {
+        const findBlogByID = await FetchBlogFromDBById(id)
+
+        if (!findBlogByID) {
+            return {
+                content: [{ type: "text", text: "Blog Not Found" }]
+            }
+        }
+
+        const prompt = `Expand the highlighted text to make it more detailed, logically structured, and professionally written. Improve clarity, coherence, and depth while maintaining the original intent : \n\n${highlightedText}`
+
+        const aiPromptRewrite = await model.generateContent(prompt)
+        const aiRewriteResponse = aiPromptRewrite.response.text()
+
+
+        await RewriteBlogInDB(id, highlightedText, aiRewriteResponse)
+
+
+        return {
+            content: [
+                { type: "text" as const, text: `Successfully Rewriten` }
+            ]
+        }
+
+    } catch (error: any) {
+        console.error(`[MCP] rewrite-blog error:`, error.message)
+        return {
+            content: [
+                { type: "text" as const, text: `Failed: ${error.message}` }
             ]
         }
     }

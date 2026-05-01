@@ -28,6 +28,24 @@ export async function FetchBlogFromDB() {
     return result
 }
 
+export async function RewriteBlogInDB(id: string, highlightedText: string, aiRewriteResponse: string) {
+    await connectDB()
+
+    // Step 1: Fetch the current blog
+    const blog = await blogScehmaTable.findById(id)
+    if (!blog) throw new Error("Blog not found")
+
+    // Step 2: Replace the highlighted text in JavaScript (simple & reliable)
+    const updatedDescription = blog.description.replace(highlightedText, aiRewriteResponse)
+
+    // Step 3: Save back with a normal $set (no pipeline needed)
+    const result = await blogScehmaTable.updateOne(
+        { _id: id },
+        { $set: { description: updatedDescription } }
+    )
+
+    return result
+}
 
 
 export async function FetchBlogFromDBById(id: string) {
