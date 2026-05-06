@@ -3,22 +3,76 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById, RewriteBlogInDB } from "../lib/dal/blog"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { blogAnalysisSchemaTable } from "../models/db"
+import { blogAnalysisSchemaTable, blogChunkSchemaTable } from "../models/db"
+import { storeBlogInVectorDB } from "../lib/dal/rag"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
     model: "gemini-flash-latest",
     generationConfig: {
-        maxOutputTokens: 800, // Hard limit to control costs and prevent overly long responses
+        maxOutputTokens: 800,
         temperature: 0.7,
     }
 });
+
+const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" })
 
 export const server = new McpServer({
     name: "test",
     version: "1.0.0",
 })
 // @ts-ignore
+
+export async function RagBlogQuestionAction(prevState: any, formData: FormData) {
+
+    const userQuestion = formData.get("userQuestion") as string;
+
+    if (!userQuestion) {
+        return {
+            state: "error",
+            message: "Please provide a question",
+            data: null
+        }
+    }
+
+    const result = await embedModel.embedContent(userQuestion);
+    const questionEmbedding = result.embedding.values;
+
+
+    const relevantChunks = await blogChunkSchemaTable.aggregate([
+        {
+            "$vectorSearch": {
+                "index": "vector_index",
+                "path": "embedding",
+                "queryVector": questionEmbedding,
+                "numCandidates": 10,
+                "limit": 3
+            }
+        }
+    ]);
+
+
+    const context = relevantChunks.map((c) => c.description).join("\n\n")
+
+    const finalPrompt = `Answer the question using ONLY the context provided below. If the answer is not in the context, say you don't know.
+      
+      Context: 
+      ${context}
+      
+      Question: ${userQuestion}`
+
+    const chatModel = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
+
+    const response = await chatModel.generateContent(finalPrompt)
+    const text = response.response.text()
+
+    return {
+        state: "success",
+        message: text,
+        data: null
+    }
+
+}
 
 server.tool("create-blog", "add a new blog", {
     title: z.string(),
@@ -34,6 +88,10 @@ server.tool("create-blog", "add a new blog", {
         console.error(`[MCP] Gemini generation complete. Length: ${AI_GENERATED_BLOG.length}`);
 
         const insertBlogData = await InsertBlogToDB(title, AI_GENERATED_BLOG)
+
+        const chunkData = await storeBlogInVectorDB(insertBlogData._id.toString(), AI_GENERATED_BLOG)
+
+        console.log(chunkData)
         console.error(`[MCP] Database insertion complete. ID: ${insertBlogData._id}`);
 
         return {

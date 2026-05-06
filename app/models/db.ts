@@ -32,9 +32,22 @@ const blogSchema = new mongoose.Schema({
     uid: String,
     emailId: String,
     title: String,
-    description: String
+    description: String,
+    embeddings: {
+        type: [Number],
+        default: []
+    },
 })
 
+
+const blogChunkSchema = new mongoose.Schema({
+    blogId: { type: mongoose.Schema.Types.ObjectId, ref: "blogSchema" },
+    description: String,
+    embeddings: {
+        type: [Number],
+        index: true
+    }
+})
 
 const usersAccount = new mongoose.Schema({
     uid: String,
@@ -52,8 +65,10 @@ const blogAnalysis = new mongoose.Schema({
 
 const blogScehmaTable = mongoose.models.blogSchema || mongoose.model("blogSchema", blogSchema, "blogScehma")
 
+const blogChunkSchemaTable = mongoose.models.blogChunk || mongoose.model("blogChunk", blogChunkSchema, "blogChunks")
+
 const usersAccountSchemaTable = mongoose.models.usersAccountSchema || mongoose.model("usersAccountSchema", usersAccount, "usersAccountSchema")
 
 const blogAnalysisSchemaTable = mongoose.models.blogAnalysisSchema || mongoose.model("blogAnalysisSchema", blogAnalysis, "blogAnalysisSchema")
 
-export { blogScehmaTable, usersAccountSchemaTable, blogAnalysisSchemaTable }
+export { blogScehmaTable, blogChunkSchemaTable, usersAccountSchemaTable, blogAnalysisSchemaTable }

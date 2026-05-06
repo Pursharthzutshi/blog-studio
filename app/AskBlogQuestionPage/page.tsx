@@ -1,0 +1,27 @@
+"use client"
+
+import { useActionState } from "react";
+import { AskBlogQuestion } from "../(actions)/rag";
+
+export default function AskBlogQuestionPage() {
+
+    const initialState: any = {
+        state: "",
+        message: "",
+        data: null
+    }
+
+    const [state, formAction, isPending] = useActionState(AskBlogQuestion, initialState)
+
+
+    console.log(state)
+
+    return (
+        <>
+            <form action={formAction}>
+                <input placeholder="ask a question" name="userQuestion" type="text" />
+                <button type="submit">Ask</button>
+            </form>
+        </>
+    )
+}

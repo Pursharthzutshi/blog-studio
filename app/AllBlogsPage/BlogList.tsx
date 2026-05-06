@@ -11,14 +11,12 @@ export default function BlogList({ blogs }: { blogs: any[] }) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
+
             {blogs.map((blog) => (
                 <div key={blog._id.toString()} className="card flex flex-col group hover:border-[var(--border-active)] transition-all duration-300" style={{ minHeight: '340px' }}>
-                    {/* Top accent — visible on hover */}
                     <div className="h-[2px] w-full rounded-t-[16px] bg-transparent group-hover:bg-[var(--accent)] transition-all duration-500" />
 
-                    {/* Card body */}
                     <div className="p-6 flex-1 flex flex-col gap-3">
-                        {/* ID badge */}
                         <div className="flex justify-between items-center">
                             <span className="badge text-[10px]">
                                 #{blog._id.toString().slice(-6).toUpperCase()}

@@ -35,6 +35,7 @@ export default function RootLayout({
               <Link href="/CreateBlogByMCP" className="nav-link">AI Studio</Link>
               <Link href="/AnalyzeBlog" className="nav-link">Analysis</Link>
               <Link href="/AddNewBlogPage" className="nav-link">Write</Link>
+              <Link href="/AskBlogQuestionPage" className="nav-link">Ask Blog Question from AI</Link>
 
               <div className="h-4 w-px bg-[var(--border)] mx-3" />
 
