@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById, RewriteBlogInDB } from "../lib/dal/blog"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { blogAnalysisSchemaTable, blogChunkSchemaTable } from "../models/db"
+import { blogAnalysisSchemaTable, blogChunkSchemaTable, connectDB } from "../models/db"
 import { storeBlogInVectorDB } from "../lib/dal/rag"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -35,6 +35,8 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
         }
     }
 
+    await connectDB()
+
     const result = await embedModel.embedContent(userQuestion);
     const questionEmbedding = result.embedding.values;
 
@@ -43,7 +45,7 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
         {
             "$vectorSearch": {
                 "index": "vector_index",
-                "path": "embedding",
+                "path": "embeddings",
                 "queryVector": questionEmbedding,
                 "numCandidates": 10,
                 "limit": 3
@@ -217,13 +219,3 @@ server.prompt("prompt-analysis", "detailed analysis of prompts", { text: z.strin
         ]
     }
 })
-
-// Uncomment this block below ONLY if you want to connect Claude Desktop to this file later!
-// async function main() {
-//     const transport = new StdioServerTransport()
-//     await server.connect(transport)
-// }
-// 
-// main().catch((error) => {
-//     console.error("Fatal error running MCP server:", error)
-// })
