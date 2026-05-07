@@ -1,34 +1,19 @@
 "use server"
 
-import { DeleteBlogFromDb, InsertBlogToDB, UpdateBlogFromDb } from "../lib/dal/blog"
+import GetUserToken from "../getUserToken"
+import { DeleteBlogFromDb, InsertBlogQuestionsAndAnswersToDB, InsertBlogToDB, UpdateBlogFromDb } from "../lib/dal/blog"
 import { revalidatePath } from "next/cache"
-import { cookies } from "next/headers"
-import jwt from "jsonwebtoken"
 
 
-export async function GetUserToken() {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("session")?.value
-
-    let emailId = ""
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any
-            emailId = decoded.emailId
-
-            return emailId;
-        } catch (error) {
-            return error
-        }
-    }
-}
 
 export async function InsertBlog(prevState: any, formData: FormData) {
 
     const title = formData.get("blog-title") as string
     const desc = formData.get("blog-description") as string
-    const emailId = await GetUserToken() as string
+    const userResult = await GetUserToken()
 
+
+    const emailId = userResult?.emailId
     const result = await InsertBlogToDB(title, desc, emailId)
 
     return {
@@ -75,5 +60,31 @@ export async function UpdateBlog(prevState: any, formData: FormData) {
         message: "",
         data: JSON.parse(JSON.stringify(result))
     }
+
+}
+
+// export async function fetchBlogQuestionsAndAnswers(formData: FormData) {
+//     const userResult = await GetUserToken()
+
+//     const emailId = userResult?.emailId
+
+//     const fetchBlogQuestionsAndAnswersResult = await 
+// }
+
+
+
+export async function InsertBlogQuestionsAndAnswers(userQuestion: string, aiAnswerResponse: string) {
+    const userResult = await GetUserToken()
+
+    const emailId = userResult?.emailId
+
+    const fetchBlogQuestionsAndAnswersResult = await InsertBlogQuestionsAndAnswersToDB(userQuestion, aiAnswerResponse, emailId)
+
+    return {
+        state: "success",
+        message: "",
+        data: JSON.parse(JSON.stringify(fetchBlogQuestionsAndAnswersResult))
+    }
+
 
 }

@@ -1,4 +1,4 @@
-import { blogAnalysisSchemaTable, blogScehmaTable, connectDB } from "../../models/db"
+import { blogAnalysisSchemaTable, blogScehmaTable, connectDB, questionLogSchemaTable } from "../../models/db"
 
 export async function InsertBlogToDB(title: string, description: string, emailId: string = "") {
     await connectDB()
@@ -52,6 +52,18 @@ export async function FetchBlogFromDBById(id: string) {
     await connectDB()
 
     const result = await blogScehmaTable.findById(id);
+
+    return result
+}
+
+export async function InsertBlogQuestionsAndAnswersToDB(userQuestion: string, aiResponse: String, emailId?: string) {
+    await connectDB()
+
+    const result = await questionLogSchemaTable.create({
+        emailId: emailId,
+        userQuestion: userQuestion,
+        aiResponse: aiResponse,
+    });
 
     return result
 }

@@ -63,12 +63,23 @@ const blogAnalysis = new mongoose.Schema({
     blogAnalysis: String
 })
 
+
+const questionLogSchema = new mongoose.Schema({
+    uid: String,
+    emailId: String,
+    userQuestion: String,
+    aiResponse: String,
+    // timestamp: { type: Date, default: Date.now },
+})
+
 const blogScehmaTable = mongoose.models.blogSchema || mongoose.model("blogSchema", blogSchema, "blogScehma")
 
 const blogChunkSchemaTable = mongoose.models.blogChunk || mongoose.model("blogChunk", blogChunkSchema, "blogChunks")
+
+const questionLogSchemaTable = mongoose.models.questionLogSchema || mongoose.model("questionLogSchema", questionLogSchema, "questionLogSchema")
 
 const usersAccountSchemaTable = mongoose.models.usersAccountSchema || mongoose.model("usersAccountSchema", usersAccount, "usersAccountSchema")
 
 const blogAnalysisSchemaTable = mongoose.models.blogAnalysisSchema || mongoose.model("blogAnalysisSchema", blogAnalysis, "blogAnalysisSchema")
 
-export { blogScehmaTable, blogChunkSchemaTable, usersAccountSchemaTable, blogAnalysisSchemaTable }
+export { blogScehmaTable, blogChunkSchemaTable, questionLogSchemaTable, usersAccountSchemaTable, blogAnalysisSchemaTable }

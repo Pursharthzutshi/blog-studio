@@ -1,3 +1,5 @@
+import { cookies } from "next/headers"
+import jwt from "jsonwebtoken"
 import { usersAccountSchemaTable, connectDB } from "../../models/db";
 
 export async function CheckIfEmailExists(emailId: string) {
@@ -27,4 +29,21 @@ export async function CheckLoginUser(emailId: string, password: string) {
     console.log(result)
 
     return result
+}
+
+export async function GetUserToken() {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("session")?.value
+
+    let emailId = ""
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any
+            emailId = decoded.emailId
+
+            return emailId;
+        } catch (error) {
+            return error
+        }
+    }
 }

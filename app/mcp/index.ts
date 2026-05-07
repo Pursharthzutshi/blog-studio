@@ -5,6 +5,7 @@ import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById, RewriteBlogInDB }
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { blogAnalysisSchemaTable, blogChunkSchemaTable, connectDB } from "../models/db"
 import { storeBlogInVectorDB } from "../lib/dal/rag"
+import { InsertBlogQuestionsAndAnswers } from "../(actions)/blog"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
@@ -66,11 +67,14 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
     const chatModel = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
 
     const response = await chatModel.generateContent(finalPrompt)
-    const text = response.response.text()
+    const aiAnswerResponse = response.response.text()
+
+
+    await InsertBlogQuestionsAndAnswers(userQuestion, aiAnswerResponse)
 
     return {
         state: "success",
-        message: text,
+        message: aiAnswerResponse,
         data: null
     }
 
