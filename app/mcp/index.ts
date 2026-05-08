@@ -6,16 +6,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import { blogAnalysisSchemaTable, blogChunkSchemaTable, connectDB } from "../models/db"
 import { storeBlogInVectorDB } from "../lib/dal/rag"
 import { InsertBlogQuestionsAndAnswers } from "../(actions)/blog"
+import openrouter from "../lib/dal/openrouter"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({
-    model: "gemini-flash-latest",
-    generationConfig: {
-        maxOutputTokens: 800,
-        temperature: 0.7,
-    }
-});
-
 const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" })
 
 export const server = new McpServer({
@@ -65,7 +58,6 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
       Question: ${userQuestion}`
 
     const chatModel = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
-
     const response = await chatModel.generateContent(finalPrompt)
     const aiAnswerResponse = response.response.text()
 
@@ -88,8 +80,7 @@ server.tool("create-blog", "add a new blog", {
         console.error(`[MCP] Starting Gemini generation for titled: ${title}`);
 
         const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Return only plain text. Do NOT use any HTML tags, markdown symbols, or code blocks. Separate paragraphs with a blank line. Keep the total length under 400 words.`;
-        const aiResult = await model.generateContent(prompt);
-        const AI_GENERATED_BLOG = aiResult.response.text().trim();
+        const AI_GENERATED_BLOG = await openrouter([{ role: "user", content: prompt }]);
 
         console.error(`[MCP] Gemini generation complete. Length: ${AI_GENERATED_BLOG.length}`);
 
@@ -129,10 +120,8 @@ server.tool("analyze-blog", "analyze a existing blog", { id: z.string() }, async
 
         const prompt = `Provide a concise (maximum 150 words) professional analysis of this blog content: ${blog.description}. Focus on key takeaways and tone.`
 
-        const aiPromptAnalysis = await model.generateContent(prompt);
-        const AI_ANALYSIS_TEXT = aiPromptAnalysis.response.text();
+        const AI_ANALYSIS_TEXT = await openrouter([{ role: "user", content: prompt }]);
 
-        // Match the schema in models/db.ts (blogId, blogAnalysis)
         const analysisEntry = await blogAnalysisSchemaTable.create({
             blogId: id,
             blogAnalysis: AI_ANALYSIS_TEXT
@@ -172,8 +161,7 @@ server.tool("rewrite-blog", "Rewrite the existing blog", {
 
         const prompt = `Expand the highlighted text to make it more detailed, logically structured, and professionally written. Improve clarity, coherence, and depth while maintaining the original intent : \n\n${highlightedText}`
 
-        const aiPromptRewrite = await model.generateContent(prompt)
-        const aiRewriteResponse = aiPromptRewrite.response.text()
+        const aiRewriteResponse = await openrouter([{ role: "user", content: prompt }]);
 
 
         await RewriteBlogInDB(id, highlightedText, aiRewriteResponse)
@@ -211,15 +199,25 @@ server.resource("all-blogs", "blogs://all", async (uri) => {
 
 server.prompt("prompt-analysis", "detailed analysis of prompts", { text: z.string() }, async ({ text }) => {
 
+    const messages = [
+        {
+            role: "user",
+            content: "You are an expert in creating blogs. Please analyze this text: " + text
+        }
+    ]
+
+    const aiAnswer = await openrouter(messages)
+
     return {
         messages: [
             {
-                role: "user",
+                role: "assistant",
                 content: {
                     type: "text",
-                    text: "You are an expert in creating blogs. Please analyze this text: " + text
+                    text: aiAnswer
                 }
             }
         ]
     }
+
 })
