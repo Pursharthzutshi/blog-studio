@@ -18,6 +18,6 @@ export async function connectMcp() {
         return client
     } catch (error) {
         console.error("[MCP] connectMcp failed:", error)
-        throw error // ✅ throw so callers know it failed — don't return the Error as if it's a client!
+        throw error
     }
 }

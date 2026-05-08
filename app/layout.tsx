@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
 import "./main.css";
 import Link from "next/link";
+import GetUserToken from "./getUserToken";
+import LogoutPage from "./LogoutPage/page";
 
 export const metadata: Metadata = {
   title: "AI Blog Studio | Intelligent Content Creation",
   description: "Next-generation AI-powered blog writing, analysis, and optimization platform.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const userResult = await GetUserToken()
+  const emailId = userResult?.emailId
+  console.log(userResult)
+
   return (
     <html lang="en">
       <body>
@@ -38,11 +45,15 @@ export default function RootLayout({
               <Link href="/AskBlogQuestionPage" className="nav-link">Ask Blog Question from AI</Link>
 
               <div className="h-4 w-px bg-[var(--border)] mx-3" />
+              {
+                userResult ?
+                  <LogoutPage /> : <> <Link href="/LoginPage" className="nav-link">Login</Link>
+                    <Link href="/CreateNewAccount" className="btn-primary py-2 px-5 text-xs font-bold rounded-lg">
+                      Sign Up
+                    </Link></>
+              }
 
-              <Link href="/LoginPage" className="nav-link">Login</Link>
-              <Link href="/CreateNewAccount" className="btn-primary py-2 px-5 text-xs font-bold rounded-lg">
-                Sign Up
-              </Link>
+
             </div>
           </nav>
         </header>

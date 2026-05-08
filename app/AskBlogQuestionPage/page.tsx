@@ -13,8 +13,6 @@ export default function AskBlogQuestionPage() {
 
     const [state, formAction, isPending] = useActionState(AskBlogQuestion, initialState)
 
-
-
     return (
         <>
             <form action={formAction}>

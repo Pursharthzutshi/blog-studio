@@ -1,8 +1,9 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useEffect } from "react"
 import { LoginUser } from "../(actions)/auth"
 import Link from "next/link"
+import { useRouter } from "next/navigation" // ✅ Use this
 
 export default function LoginPage() {
     const initialState: any = {
@@ -11,10 +12,19 @@ export default function LoginPage() {
         data: null
     }
 
-    const [state, formAction, isPending] = useActionState(LoginUser, initialState)
+    const [loginState, formAction, isPending] = useActionState(LoginUser, initialState)
+
+    const router = useRouter()
+
+    useEffect(() => {
+        if (loginState.state == "success") {
+            router.push("/AllBlogsPage")
+        }
+    }, [loginState])
 
     return (
         <div className="max-w-[420px] mx-auto w-full pt-8">
+
             <div className="text-center space-y-3 mb-10">
                 <div className="accent-line mx-auto mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
@@ -66,13 +76,12 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                {state.message && (
-                    <div className={`mt-6 p-3.5 rounded-xl text-center text-xs font-medium border ${
-                        state.state === "error"
+                {loginState.message && (
+                    <div className={`mt-6 p-3.5 rounded-xl text-center text-xs font-medium border ${loginState.state === "error"
                         ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
                         : "bg-green-500/5 text-[var(--success)] border-green-500/15"
-                    }`}>
-                        {state.message}
+                        }`}>
+                        {loginState.message}
                     </div>
                 )}
             </div>

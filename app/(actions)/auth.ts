@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 
 import { CreateNewUserAccountMethod, CheckIfEmailExists, CheckLoginUser } from "../lib/dal/user"
+import { navigate } from "next/dist/client/components/segment-cache/navigation"
 
 export async function CreateNewUserAccount(prevState: any, formData: FormData) {
     try {
@@ -92,6 +93,31 @@ export async function LoginUser(prevState: any, formdata: FormData) {
             state: "success",
             message: "Logged In Successfully",
             data: user
+        }
+
+    } catch (error) {
+        return {
+            state: "error",
+            message: "User Login Failed",
+            data: null,
+        }
+    }
+}
+
+
+
+export async function LogoutUser(prevState: any, formdata: FormData) {
+    try {
+        const cookieStore = await cookies()
+
+        cookieStore.delete("session")
+
+        // navigate("/AllBlogsPage")
+
+        return {
+            state: "success",
+            message: "Logged Out Successfully",
+            data: null
         }
 
     } catch (error) {
