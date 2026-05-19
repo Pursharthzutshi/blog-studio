@@ -33,10 +33,10 @@ const blogSchema = new mongoose.Schema({
     emailId: String,
     title: String,
     description: String,
-    embeddings: {
-        type: [Number],
-        default: []
-    },
+    // embeddings: {
+    //     type: [Number],
+    //     default: []
+    // },
 })
 
 

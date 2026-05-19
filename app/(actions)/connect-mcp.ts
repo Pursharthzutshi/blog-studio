@@ -6,6 +6,10 @@ export async function connectMcp() {
     try {
         const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
 
+        try {
+            await (myLocalServer as any).transport?.close()
+        } catch (e) {}
+
         await myLocalServer.connect(serverTransport)
 
         const client = new Client(

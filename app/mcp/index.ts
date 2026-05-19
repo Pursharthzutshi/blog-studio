@@ -32,10 +32,12 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
     await connectDB()
 
     const result = await embedModel.embedContent(userQuestion);
+
     const questionEmbedding = result.embedding.values;
 
 
     const relevantChunks = await blogChunkSchemaTable.aggregate([
+        // description:,
         {
             "$vectorSearch": {
                 "index": "vector_index",
@@ -48,6 +50,7 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
     ]);
 
 
+
     const context = relevantChunks.map((c) => c.description).join("\n\n")
 
     const finalPrompt = `Answer the question using ONLY the context provided below. If the answer is not in the context, say you don't know.
@@ -57,9 +60,7 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
       
       Question: ${userQuestion}`
 
-    const chatModel = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
-    const response = await chatModel.generateContent(finalPrompt)
-    const aiAnswerResponse = response.response.text()
+    const aiAnswerResponse = await openrouter([{ role: "user", content: finalPrompt }])
 
 
     await InsertBlogQuestionsAndAnswers(userQuestion, aiAnswerResponse)
@@ -79,7 +80,7 @@ server.tool("create-blog", "add a new blog", {
     try {
         console.error(`[MCP] Starting Gemini generation for titled: ${title}`);
 
-        const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Return only plain text. Do NOT use any HTML tags, markdown symbols, or code blocks. Separate paragraphs with a blank line. Keep the total length under 400 words.`;
+        const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Return only plain text. Do NOT use any HTML tags, markdown symbols, or code blocks. Separate paragraphs with a blank line. Keep the total length under 1000 words however dont abruptly stop the sentence.`;
         const AI_GENERATED_BLOG = await openrouter([{ role: "user", content: prompt }]);
 
         console.error(`[MCP] Gemini generation complete. Length: ${AI_GENERATED_BLOG.length}`);
@@ -158,8 +159,36 @@ server.tool("rewrite-blog", "Rewrite the existing blog", {
                 content: [{ type: "text", text: "Blog Not Found" }]
             }
         }
+        const examples = [
+            {
+                originalText: "A closure is a function that remembers variables from its outer scope.",
+                targetRewrittenText: "A closure in JavaScript is created when a function retains access to variables from its lexical scope even after the outer function has finished execution. It allows functions to preserve state and continue accessing values from their creation context. Closures commonly occur when inner functions are returned or used as callbacks and are widely used for encapsulation, state management, and functional programming patterns."
+            },
+            {
+                originalText: "Closures help store values between function calls.",
+                targetRewrittenText: "Closures enable functions to preserve state across multiple executions by maintaining access to variables defined in their outer scope. This capability makes them useful for implementing private variables, maintaining internal state, and building reusable functional patterns."
+            }
+        ]
 
-        const prompt = `Expand the highlighted text to make it more detailed, logically structured, and professionally written. Improve clarity, coherence, and depth while maintaining the original intent : \n\n${highlightedText}`
+        // Format the examples into a clean string so the LLM can read them perfectly
+        const formattedExamples = examples.map((ex, index) =>
+            `Example ${index + 1}:\n- Original Text: "${ex.originalText}"\n- Desired Expansion: "${ex.targetRewrittenText}"`
+        ).join("\n\n")
+
+        const prompt = `You are a professional technical editor. Your job is to expand the highlighted text to make it more detailed, logically structured, and professionally written. Improve clarity, coherence, and depth while maintaining the original intent.
+        
+        ### Examples of Desired Quality:
+        ${formattedExamples}
+        
+        ### Text to Expand:
+        "${highlightedText}"
+        
+        ### Strict Instructions:
+
+        1. Maintain the original core meaning and intent of the selected text.
+        2. Return ONLY the final expanded plain text. 
+        3. Do NOT include any quotation marks around the final response.
+        4. Do NOT include any conversational introduction, explanation, or conversational outro (e.g. do NOT say "Here is your refined text:").`
 
         const aiRewriteResponse = await openrouter([{ role: "user", content: prompt }]);
 

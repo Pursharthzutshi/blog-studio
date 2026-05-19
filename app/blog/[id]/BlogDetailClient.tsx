@@ -1,8 +1,9 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import Link from "next/link"
 import { RewriteBlogWithMCP } from "@/app/(actions)/rewriteblogwithmcp"
+import { useRouter } from "next/navigation"
 
 type BlogData = {
     id: string
@@ -20,6 +21,15 @@ export default function BlogDetailClient({ blog }: { blog: BlogData }) {
 
     const [highlightedText, setHighlightedText] = useState<string>("")
     const [state, formAction, isPending] = useActionState(RewriteBlogWithMCP.bind(null, highlightedText, blog.id), initialState)
+
+    const router = useRouter();
+
+    useEffect(() => {
+        if (state.state === "success") {
+            setHighlightedText("")
+            router.refresh();
+        }
+    }, [state])
 
     const highlightText = () => {
         const selected = window.getSelection()?.toString() || ""
