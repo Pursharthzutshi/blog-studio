@@ -1,7 +1,7 @@
 "use server"
 
 import GetUserToken from "../getUserToken"
-import { DeleteBlogFromDb, InsertBlogQuestionsAndAnswersToDB, InsertBlogToDB, UpdateBlogFromDb } from "../lib/dal/blog"
+import { DeleteBlogFromDb, FetchRecentQuestionsAndAnswersFromDB, InsertBlogQuestionsAndAnswersToDB, InsertBlogToDB, UpdateBlogFromDb } from "../lib/dal/blog"
 import { revalidatePath } from "next/cache"
 
 
@@ -63,13 +63,19 @@ export async function UpdateBlog(prevState: any, formData: FormData) {
 
 }
 
-// export async function fetchBlogQuestionsAndAnswers(formData: FormData) {
-//     const userResult = await GetUserToken()
+export async function FetchRecentQuestionsAndAnswers() {
+    const userResult = await GetUserToken()
 
-//     const emailId = userResult?.emailId
+    const emailId: string | undefined = userResult?.emailId
 
-//     const fetchBlogQuestionsAndAnswersResult = await 
-// }
+    const fetchBlogQuestionsAndAnswersResult = await FetchRecentQuestionsAndAnswersFromDB(emailId!);
+
+    return {
+        state: "success",
+        message: "",
+        data: JSON.parse(JSON.stringify(fetchBlogQuestionsAndAnswersResult))
+    }
+}
 
 
 

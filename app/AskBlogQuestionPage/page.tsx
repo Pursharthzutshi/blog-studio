@@ -2,8 +2,10 @@
 
 import { useActionState } from "react";
 import { AskBlogQuestion } from "../(actions)/rag";
+import FetchQuestionsAndAnswers from "./fetchQuestionsAndAnswers";
 
 export default function AskBlogQuestionPage() {
+
 
     const initialState: any = {
         state: "",
@@ -11,7 +13,9 @@ export default function AskBlogQuestionPage() {
         data: null
     }
 
+
     const [state, formAction, isPending] = useActionState(AskBlogQuestion, initialState)
+
 
     return (
         <>
@@ -23,6 +27,9 @@ export default function AskBlogQuestionPage() {
                     isPending ? <p>Loading...</p> : <p>{state.message}</p>
                 }
             </form>
+
+
+            <FetchQuestionsAndAnswers />
         </>
     )
 }

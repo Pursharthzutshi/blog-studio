@@ -56,6 +56,14 @@ export async function FetchBlogFromDBById(id: string) {
     return result
 }
 
+export async function FetchRecentQuestionsAndAnswersFromDB(id: string) {
+    await connectDB()
+
+    const result = await questionLogSchemaTable.find();
+
+    return result
+}
+
 export async function InsertBlogQuestionsAndAnswersToDB(userQuestion: string, aiResponse: String, emailId?: string) {
     await connectDB()
 
