@@ -8,7 +8,7 @@ export default async function openrouter(messages: { role: string, content: stri
             "HTTP-Referer": "http://localhost:3000",
         },
         body: JSON.stringify({
-            model: "google/gemini-2.0-flash-001",
+            model: "google/gemini-2.5-flash",
             messages: messages
         })
     });

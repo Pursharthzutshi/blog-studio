@@ -37,21 +37,49 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
 
 
     const relevantChunks = await blogChunkSchemaTable.aggregate([
-        // description:,
         {
             "$vectorSearch": {
                 "index": "vector_index",
                 "path": "embeddings",
                 "queryVector": questionEmbedding,
-                "numCandidates": 10,
-                "limit": 3
+                "numCandidates": 50,
+                "limit": 5
             }
         }
     ]);
 
+    const textPipeline = [
+        {
+            $search: {
+                index: "text_index",
+                text: {
+                    query: userQuestion,
+                    path: ["description"]
+                }
+            },
+        },
+        {
+            $limit: 5
+
+        }
+
+    ]
+
+    const textResults = await blogChunkSchemaTable.aggregate(textPipeline);
+
+    const hybridSearch = [...relevantChunks, ...textResults]
+
+    const hybridSearchCombined = Array.from(
+        new Map(
+            hybridSearch.map(item => [
+                item._id.toString(),
+                item
+            ])
+        ).values()
+    )
 
 
-    const context = relevantChunks.map((c) => c.description).join("\n\n")
+    const context = hybridSearchCombined.map((c) => c.description).join("\n\n")
 
     const finalPrompt = `Answer the question using ONLY the context provided below. If the answer is not in the context, say you don't know.
       

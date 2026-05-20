@@ -13,14 +13,23 @@ export async function storeBlogInVectorDB(blogId: string, description: string) {
 
         const chunks = []
         let current = ""
+        let overlap = "";
+
 
         for (let sentence of sentences) {
             if ((current + sentence).length > 500) {
 
                 chunks.push(current);
-                current = "";
+
+                overlap = current.split(". ").slice(-1).join(". ");
+
+                current = overlap + " " + sentence;
+
+            } else {
+
+                current += " " + sentence;
             }
-            current += sentence + " ";
+
         }
         if (current) chunks.push(current)
 
