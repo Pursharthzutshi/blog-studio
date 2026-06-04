@@ -81,12 +81,18 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
 
     const context = hybridSearchCombined.map((c) => c.description).join("\n\n")
 
-    const finalPrompt = `Answer the question using ONLY the context provided below. If the answer is not in the context, say you don't know.
-      
-      Context: 
-      ${context}
-      
-      Question: ${userQuestion}`
+    const hasContext = context.trim().length > 0;
+
+    const finalPrompt = hasContext
+        ? `You are a helpful assistant. Use the blog context below to answer the question. If the context covers the topic, prioritize it. If the context is not relevant or insufficient, use your own general knowledge to answer helpfully — but mention that this topic isn't covered in the blogs yet.
+
+Context from blogs:
+${context}
+
+Question: ${userQuestion}`
+        : `You are a helpful assistant. The user asked: "${userQuestion}"
+
+No relevant blog content was found for this topic. Answer using your general knowledge, and mention that their blog collection doesn't cover this topic yet — they could create a blog about it.`
 
     const aiAnswerResponse = await openrouter([{ role: "user", content: finalPrompt }])
 
