@@ -84,15 +84,27 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
     const hasContext = context.trim().length > 0;
 
     const finalPrompt = hasContext
-        ? `You are a helpful assistant. Use the blog context below to answer the question. If the context covers the topic, prioritize it. If the context is not relevant or insufficient, use your own general knowledge to answer helpfully — but mention that this topic isn't covered in the blogs yet.
+        ? `You are a helpful assistant answering questions for a blog platform.
 
-Context from blogs:
+You have been given some blog content below that was retrieved as potentially relevant to the user's question.
+
+**Your job:**
+1. First, decide if the blog context DIRECTLY and SPECIFICALLY answers the user's question.
+2. If YES — answer using the blog context and cite it.
+3. If NO (the context is only loosely related, tangential, or off-topic) — ignore the blog context entirely and answer from your own general knowledge. Also mention that the user's blog collection doesn't have a dedicated post on this topic yet.
+
+Do NOT force blog context into your answer if it doesn't directly address the question.
+
+---
+Blog context (may or may not be relevant):
 ${context}
+---
 
-Question: ${userQuestion}`
-        : `You are a helpful assistant. The user asked: "${userQuestion}"
+User question: ${userQuestion}`
+        : `You are a helpful assistant for a blog platform. The user asked: "${userQuestion}"
 
-No relevant blog content was found for this topic. Answer using your general knowledge, and mention that their blog collection doesn't cover this topic yet — they could create a blog about it.`
+No blog content was found for this topic. Answer using your general knowledge, and let the user know their blog collection doesn't cover this topic yet — they could write a blog post about it!`
+
 
     const aiAnswerResponse = await openrouter([{ role: "user", content: finalPrompt }])
 

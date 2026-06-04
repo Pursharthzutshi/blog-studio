@@ -241,6 +241,61 @@ input:focus, textarea:focus {
   color: var(--text-primary);
 }
 
+/* ── Nav Pill Items (navbar center links) ── */
+.nav-pill-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-pill-item svg {
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-pill-item:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.nav-pill-item:hover svg {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.nav-pill-item.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.nav-pill-item.active svg {
+  opacity: 1;
+}
+
+/* ── Nav Login Link ── */
+.nav-login-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-login-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* ── Gradient Heading ── */
 .gradient-text {
   background: linear-gradient(135deg, #fafaf9 0%, var(--accent) 50%, #fafaf9 100%);
