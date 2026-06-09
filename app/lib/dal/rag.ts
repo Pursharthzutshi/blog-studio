@@ -1,10 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { blogChunkSchemaTable } from "@/app/models/db";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-const embedModel = genAI.getGenerativeModel({
-    model: "gemini-embedding-001",
-})
+import { getOpenRouterEmbedding } from "./openrouter";
 
 export async function storeBlogInVectorDB(blogId: string, description: string) {
     try {
@@ -35,8 +30,7 @@ export async function storeBlogInVectorDB(blogId: string, description: string) {
 
 
         for (let chunk of chunks) {
-            const result = await embedModel.embedContent(chunk);
-            const embedding = result.embedding.values;
+            const embedding = await getOpenRouterEmbedding(chunk);
 
             console.log("embedding", embedding)
 

@@ -28,7 +28,7 @@ export default async function RootLayout({
         {/* ── Navbar ── */}
         <header className="sticky top-0 z-50 w-full" style={{ background: 'rgba(10, 10, 11, 0.75)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
           <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-            <nav className="container flex items-center justify-between gap-6" style={{ height: '72px', padding: '0 2.5rem' }}>
+            <nav className="container" style={{ height: '72px', padding: '0 2.5rem', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
 
               {/* Logo */}
               <Link href="/" className="flex items-center gap-3 group shrink-0" style={{ textDecoration: 'none' }}>
@@ -78,7 +78,7 @@ export default async function RootLayout({
               </div>
 
               {/* Auth Section */}
-              <div className="hidden md:flex items-center shrink-0" style={{ gap: '10px' }}>
+              <div className="hidden md:flex items-center shrink-0" style={{ gap: '10px', justifySelf: 'end' }}>
                 {userResult ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {/* User Chip */}

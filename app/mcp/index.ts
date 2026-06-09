@@ -2,14 +2,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import { InsertBlogToDB, FetchBlogFromDB, FetchBlogFromDBById, RewriteBlogInDB } from "../lib/dal/blog"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { getOpenRouterEmbedding } from "../lib/dal/openrouter"
 import { blogAnalysisSchemaTable, blogChunkSchemaTable, connectDB } from "../models/db"
 import { storeBlogInVectorDB } from "../lib/dal/rag"
 import { InsertBlogQuestionsAndAnswers } from "../(actions)/blog"
 import openrouter from "../lib/dal/openrouter"
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" })
 
 export const server = new McpServer({
     name: "test",
@@ -31,9 +28,7 @@ export async function RagBlogQuestionAction(prevState: any, formData: FormData) 
 
     await connectDB()
 
-    const result = await embedModel.embedContent(userQuestion);
-
-    const questionEmbedding = result.embedding.values;
+    const questionEmbedding = await getOpenRouterEmbedding(userQuestion);
 
 
     const relevantChunks = await blogChunkSchemaTable.aggregate([
