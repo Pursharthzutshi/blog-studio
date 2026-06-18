@@ -1,5 +1,5 @@
 import Link from "next/link";
-import GetUserToken from "./getUserToken";
+import GetUserToken from "../getUserToken";
 
 export default async function LandingPage() {
   const userResult = await GetUserToken();
