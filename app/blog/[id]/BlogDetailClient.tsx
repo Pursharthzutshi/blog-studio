@@ -39,7 +39,7 @@ export default function BlogDetailClient({ blog }: { blog: BlogData }) {
     }
 
     return (
-        <div className="py-8 max-w-3xl mx-auto">
+        <div className="max-w-4xl w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
             {/* Back button */}
             <Link
                 href="/AllBlogsPage"
@@ -48,7 +48,7 @@ export default function BlogDetailClient({ blog }: { blog: BlogData }) {
                 ← Back to All Blogs
             </Link>
 
-            <article className="card p-8 md:p-12 space-y-8">
+            <article className="card space-y-8" style={{ padding: '64px' }}>
                 {/* Header */}
                 <div className="space-y-4 pb-6 border-b border-[var(--border)]">
                     <div className="flex items-center gap-3">

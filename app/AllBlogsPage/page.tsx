@@ -7,10 +7,10 @@ export default async function HomePage() {
     const GetUserTokenResult = await GetUserToken();
 
     return (
-        <div className="py-8 space-y-12">
+        <div style={{ paddingTop: '64px', paddingBottom: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '48px', width: '100%' }}>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-                <div className="space-y-3">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                         All Blogs
                     </h1>
@@ -19,7 +19,7 @@ export default async function HomePage() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
                     <span className="badge">
                         {blogs.length} {blogs.length === 1 ? 'post' : 'posts'}
                     </span>
@@ -32,11 +32,13 @@ export default async function HomePage() {
             </div>
 
             {/* Blog Grid */}
-            <BlogList blogs={JSON.parse(JSON.stringify(blogs))} />
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <BlogList blogs={JSON.parse(JSON.stringify(blogs))} />
+            </div>
 
             {/* Empty state */}
             {blogs.length === 0 && (
-                <div className="text-center py-24 card border-dashed">
+                <div className="py-24 px-8 card border-dashed" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                     <div className="text-4xl mb-4">📝</div>
                     <p className="text-[var(--text-muted)] font-medium">No blogs yet. Start by creating one!</p>
                 </div>

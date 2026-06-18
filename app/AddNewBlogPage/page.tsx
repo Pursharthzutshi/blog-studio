@@ -10,12 +10,10 @@ export default function AddNewBlog() {
         data: null
     }
 
-    // Clean — no need to fetch user token on the client anymore.
-    // InsertBlog reads the session cookie directly on the server.
     const [state, formAction, isPending] = useActionState(InsertBlog, initialState)
 
     return (
-        <div className="max-w-2xl mx-auto w-full pt-8">
+        <div className="max-w-3xl w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
             <div className="space-y-3 mb-10">
                 <div className="accent-line mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
@@ -26,7 +24,7 @@ export default function AddNewBlog() {
                 </p>
             </div>
 
-            <div className="card p-8">
+            <div className="card" style={{ padding: '48px' }}>
                 <form action={formAction} className="space-y-6">
                     <div className="space-y-2">
                         <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
@@ -64,11 +62,10 @@ export default function AddNewBlog() {
                 </form>
 
                 {state?.message && (
-                    <div className={`mt-6 p-4 rounded-xl text-center text-sm font-medium border ${
-                        state.state === "error"
-                        ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
-                        : "bg-green-500/5 text-[var(--success)] border-green-500/15"
-                    }`}>
+                    <div className={`mt-6 p-4 rounded-xl text-left text-sm font-medium border ${state.state === "error"
+                            ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
+                            : "bg-green-500/5 text-[var(--success)] border-green-500/15"
+                        }`}>
                         {state?.state === "success" ? "✓ Blog published successfully!" : state?.message}
                     </div>
                 )}

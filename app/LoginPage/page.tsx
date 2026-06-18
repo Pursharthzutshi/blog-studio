@@ -23,10 +23,10 @@ export default function LoginPage() {
     }, [loginState])
 
     return (
-        <div className="max-w-[420px] mx-auto w-full pt-8">
+        <div className="max-w-[420px] w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
 
-            <div className="text-center space-y-3 mb-10">
-                <div className="accent-line mx-auto mb-6" />
+            <div className="text-left space-y-3 mb-10">
+                <div className="accent-line mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
                     Welcome back
                 </h1>
@@ -35,7 +35,7 @@ export default function LoginPage() {
                 </p>
             </div>
 
-            <div className="card p-8">
+            <div className="card" style={{ padding: '48px' }}>
                 <form action={formAction} className="space-y-5">
                     <div className="space-y-2">
                         <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">
@@ -77,7 +77,7 @@ export default function LoginPage() {
                 </form>
 
                 {loginState.message && (
-                    <div className={`mt-6 p-3.5 rounded-xl text-center text-xs font-medium border ${loginState.state === "error"
+                    <div className={`mt-6 p-3.5 rounded-xl text-left text-xs font-medium border ${loginState.state === "error"
                         ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
                         : "bg-green-500/5 text-[var(--success)] border-green-500/15"
                         }`}>
@@ -86,7 +86,7 @@ export default function LoginPage() {
                 )}
             </div>
 
-            <p className="text-center mt-6 text-sm text-[var(--text-muted)]">
+            <p className="text-left mt-6 text-sm text-[var(--text-muted)]">
                 Don&apos;t have an account?{" "}
                 <Link href="/CreateNewAccount" className="text-[var(--accent)] hover:underline font-medium">
                     Sign up

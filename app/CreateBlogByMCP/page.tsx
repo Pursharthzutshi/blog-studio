@@ -13,7 +13,7 @@ export default function CreateBlogByMCPPage() {
     const [state, formAction, isPending] = useActionState(CreateBlogWithMCP, initialState)
 
     return (
-        <div className="max-w-2xl mx-auto w-full pt-8">
+        <div className="max-w-3xl w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
             <div className="space-y-3 mb-10">
                 <div className="accent-line mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
@@ -24,7 +24,7 @@ export default function CreateBlogByMCPPage() {
                 </p>
             </div>
 
-            <div className="card p-8">
+            <div className="card" style={{ padding: '48px' }}>
                 <div className="flex items-center gap-2 mb-6">
                     <div className="h-2 w-2 rounded-full bg-[var(--success)] animate-pulse" />
                     <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">System Ready</span>
@@ -69,7 +69,7 @@ export default function CreateBlogByMCPPage() {
                 </form>
 
                 {state.message && (
-                    <div className={`mt-6 p-4 rounded-xl text-center text-sm font-medium border ${
+                    <div className={`mt-6 p-4 rounded-xl text-left text-sm font-medium border ${
                         state.state === "error"
                         ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
                         : "bg-green-500/5 text-[var(--success)] border-green-500/15"

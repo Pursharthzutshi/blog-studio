@@ -13,7 +13,7 @@ export default function AnalyzeBlog() {
     const [state, formAction, isPending] = useActionState(AnalyzeBlogAction, initialState)
 
     return (
-        <div className="max-w-2xl mx-auto w-full pt-8">
+        <div className="max-w-3xl w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
             <div className="space-y-3 mb-10">
                 <div className="accent-line mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
@@ -24,7 +24,7 @@ export default function AnalyzeBlog() {
                 </p>
             </div>
 
-            <div className="card p-8">
+            <div className="card" style={{ padding: '48px' }}>
                 <form action={formAction} className="space-y-6">
                     <div className="space-y-2">
                         <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider ml-0.5">

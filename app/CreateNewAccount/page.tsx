@@ -14,9 +14,9 @@ export default function CreateNewAccount() {
     const [state, formAction, isPending] = useActionState(CreateNewUserAccount, initialState)
 
     return (
-        <div className="max-w-[460px] mx-auto w-full pt-8">
-            <div className="text-center space-y-3 mb-10">
-                <div className="accent-line mx-auto mb-6" />
+        <div className="max-w-[460px] w-full" style={{ paddingTop: '64px', paddingBottom: '64px' }}>
+            <div className="text-left space-y-3 mb-10">
+                <div className="accent-line mb-6" />
                 <h1 className="text-3xl font-bold tracking-tight">
                     Create an account
                 </h1>
@@ -25,7 +25,7 @@ export default function CreateNewAccount() {
                 </p>
             </div>
 
-            <div className="card p-8">
+            <div className="card" style={{ padding: '48px' }}>
                 <form action={formAction} className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -59,7 +59,7 @@ export default function CreateNewAccount() {
                 </form>
 
                 {state?.message && (
-                    <div className={`mt-6 p-3.5 rounded-xl text-center text-xs font-medium border ${
+                    <div className={`mt-6 p-3.5 rounded-xl text-left text-xs font-medium border ${
                         state.state === "error"
                         ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
                         : "bg-green-500/5 text-[var(--success)] border-green-500/15"
@@ -69,7 +69,7 @@ export default function CreateNewAccount() {
                 )}
             </div>
 
-            <p className="text-center mt-6 text-sm text-[var(--text-muted)]">
+            <p className="text-left mt-6 text-sm text-[var(--text-muted)]">
                 Already have an account?{" "}
                 <Link href="/LoginPage" className="text-[var(--accent)] hover:underline font-medium">
                     Sign in

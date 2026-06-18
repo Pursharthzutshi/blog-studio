@@ -13,11 +13,11 @@ export default function BlogList({ blogs }: { blogs: any[] }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
 
             {blogs.map((blog) => (
-                <div key={blog._id.toString()} className="card flex flex-col group hover:border-[var(--border-active)] transition-all duration-300" style={{ minHeight: '340px' }}>
+                <div key={blog._id.toString()} className="card group hover:border-[var(--border-active)] transition-all duration-300" style={{ minHeight: '360px', display: 'flex', flexDirection: 'column' }}>
                     <div className="h-[2px] w-full rounded-t-[16px] bg-transparent group-hover:bg-[var(--accent)] transition-all duration-500" />
 
-                    <div className="p-6 flex-1 flex flex-col gap-3">
-                        <div className="flex justify-between items-center">
+                    <div style={{ padding: '32px', flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span className="badge text-[10px]">
                                 #{blog._id.toString().slice(-6).toUpperCase()}
                             </span>
