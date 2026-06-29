@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { blogAnalysisSchemaTable, blogScehmaTable, connectDB, questionLogSchemaTable } from "../../models/db"
 
 export async function InsertBlogToDB(title: string, description: string, emailId: string = "") {
@@ -50,6 +51,10 @@ export async function RewriteBlogInDB(id: string, highlightedText: string, aiRew
 
 export async function FetchBlogFromDBById(id: string) {
     await connectDB()
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return null;
+    }
 
     const result = await blogScehmaTable.findById(id);
 
