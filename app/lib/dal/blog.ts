@@ -52,13 +52,19 @@ export async function RewriteBlogInDB(id: string, highlightedText: string, aiRew
 export async function FetchBlogFromDBById(id: string) {
     await connectDB()
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        return await blogScehmaTable.findById(id);
     }
 
-    const result = await blogScehmaTable.findById(id);
+    // Support for short IDs like #CFA33F or CFA33F that are displayed in the UI
+    if ((id.startsWith('#') && id.length === 7) || id.length === 6) {
+        const shortHex = id.startsWith('#') ? id.slice(1).toLowerCase() : id.toLowerCase();
+        const allBlogs = await blogScehmaTable.find();
+        const found = allBlogs.find(b => b._id.toString().toLowerCase().endsWith(shortHex));
+        if (found) return found;
+    }
 
-    return result
+    return null;
 }
 
 export async function FetchRecentQuestionsAndAnswersFromDB(id: string) {
