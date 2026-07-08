@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
+import Link from "next/link"
 import { InsertBlog } from "../(actions)/blog"
 
 export default function AddNewBlog() {
@@ -66,7 +67,18 @@ export default function AddNewBlog() {
                             ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
                             : "bg-green-500/5 text-[var(--success)] border-green-500/15"
                         }`}>
-                        {state?.state === "success" ? "✓ Blog published successfully!" : state?.message}
+                        {state?.state === "success" ? (
+                            <span className="flex flex-col gap-1">
+                                <span>✓ Blog published successfully!</span>
+                                <span className="text-xs text-[var(--text-muted)] font-normal">
+                                    Check it out on the{" "}
+                                    <Link href="/AllBlogsPage" className="underline underline-offset-2 text-[var(--accent)] hover:opacity-80 transition-opacity">
+                                        Explore page
+                                    </Link>
+                                    {" "}where all blogs are listed.
+                                </span>
+                            </span>
+                        ) : state?.message}
                     </div>
                 )}
             </div>
