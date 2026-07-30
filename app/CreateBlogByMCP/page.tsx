@@ -68,6 +68,29 @@ export default function CreateBlogByMCPPage() {
                     </button>
                 </form>
 
+                {/* Content safety notice — shown while generating */}
+                {isPending && (
+                    <div className="mt-5 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex items-start gap-3">
+                        <span className="text-base leading-none mt-0.5 animate-pulse">🛡️</span>
+                        <div className="space-y-0.5">
+                            <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Content Safety Check</p>
+                            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                                All topics are reviewed against our content guidelines. Harmful, offensive, or dangerous content will not be generated or published.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Persistent policy badge — always visible */}
+                {!isPending && !state.message && (
+                    <div className="mt-6 flex items-center gap-2 px-1">
+                        <span className="text-xs">🛡️</span>
+                        <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                            Content violating community guidelines — including harmful, dangerous, or offensive topics — will be blocked and not published.
+                        </p>
+                    </div>
+                )}
+
                 {state.message && (() => {
                     const isRefused = state.message.startsWith("REFUSED:")
                     const isSuccess = state.state === "success"
