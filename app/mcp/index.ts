@@ -119,6 +119,26 @@ server.tool("create-blog", "add a new blog", {
     description: z.string(),
 }, async ({ title, description }) => {
     try {
+        // ── Title safety gate ─────────────────────────────────────────────────
+        // Reject obviously harmful / offensive titles before calling the AI.
+        const BLOCKED_TITLE_TERMS = [
+            "bomb", "explosive", "kill", "murder", "suicide", "shoot",
+            "terrorist", "terrorism", "weapon", "gun", "poison",
+            "drugs", "cocaine", "heroin", "meth", "rape", "assault",
+            "hack", "malware", "ransomware", "exploit", "ddos",
+            "child porn", "pornography", "xxx",
+        ]
+        const lowerTitle = title.toLowerCase()
+        const titleBlocked = BLOCKED_TITLE_TERMS.some(term => lowerTitle.includes(term))
+
+        if (titleBlocked) {
+            console.error(`[MCP] Blocked title: "${title}"`)
+            return {
+                content: [{ type: "text" as const, text: `REFUSED: The title contains restricted content and cannot be published.` }]
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         console.error(`[MCP] Starting Gemini generation for titled: ${title}`);
 
         const prompt = `Write a concise 3-paragraph professional blog post titled '${title}'. It should be about: ${description}. Return only plain text. Do NOT use any HTML tags, markdown symbols, or code blocks. Separate paragraphs with a blank line. Keep the total length under 1000 words however dont abruptly stop the sentence.`;
