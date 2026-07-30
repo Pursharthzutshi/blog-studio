@@ -68,15 +68,40 @@ export default function CreateBlogByMCPPage() {
                     </button>
                 </form>
 
-                {state.message && (
-                    <div className={`mt-6 p-4 rounded-xl text-left text-sm font-medium border ${
-                        state.state === "error"
-                        ? "bg-red-500/5 text-[var(--danger)] border-red-500/15"
-                        : "bg-green-500/5 text-[var(--success)] border-green-500/15"
-                    }`}>
-                        {state.state === "success" ? "✓ Blog generated successfully!" : state.message}
-                    </div>
-                )}
+                {state.message && (() => {
+                    const isRefused = state.message.startsWith("REFUSED:")
+                    const isSuccess = state.state === "success"
+
+                    if (isSuccess) {
+                        return (
+                            <div className="mt-6 p-4 rounded-xl text-left text-sm font-medium border bg-green-500/5 text-[var(--success)] border-green-500/15">
+                                ✓ Blog generated successfully!
+                            </div>
+                        )
+                    }
+
+                    if (isRefused) {
+                        return (
+                            <div className="mt-6 p-4 rounded-xl text-left text-sm font-medium border bg-amber-500/5 border-amber-500/20">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-base leading-none mt-0.5">⚠️</span>
+                                    <div className="space-y-1">
+                                        <p className="font-semibold text-amber-400">Content Not Allowed</p>
+                                        <p className="text-[var(--text-muted)] font-normal text-xs leading-relaxed">
+                                            {state.message.replace("REFUSED:", "").trim()}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    return (
+                        <div className="mt-6 p-4 rounded-xl text-left text-sm font-medium border bg-red-500/5 text-[var(--danger)] border-red-500/15">
+                            {state.message}
+                        </div>
+                    )
+                })()}
             </div>
         </div>
     )

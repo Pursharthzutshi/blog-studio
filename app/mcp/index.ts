@@ -126,6 +126,39 @@ server.tool("create-blog", "add a new blog", {
 
         console.error(`[MCP] Gemini generation complete. Length: ${AI_GENERATED_BLOG.length}`);
 
+        // Detect AI content refusals before saving anything to the DB
+        const REFUSAL_PHRASES = [
+            "i can't help",
+            "i cannot help",
+            "i'm unable to",
+            "i am unable to",
+            "i won't be able",
+            "i can't assist",
+            "i cannot assist",
+            "not something i can",
+            "i'm not able to",
+            "i apologize, but i",
+            "i'm sorry, but i",
+            "i cannot create",
+            "i can't create",
+            "i cannot generate",
+            "i can't generate",
+            "i cannot write",
+            "i can't write",
+            "this request",
+            "this topic",
+        ]
+
+        const lowerCaseResponse = AI_GENERATED_BLOG.toLowerCase()
+        const isRefused = REFUSAL_PHRASES.some(phrase => lowerCaseResponse.includes(phrase))
+
+        if (isRefused) {
+            console.error(`[MCP] AI refused to generate blog for title: "${title}"`);
+            return {
+                content: [{ type: "text" as const, text: `REFUSED: This topic was flagged as inappropriate or unsafe. Please try a different topic.` }]
+            }
+        }
+
         const insertBlogData = await InsertBlogToDB(title, AI_GENERATED_BLOG)
 
         const chunkData = await storeBlogInVectorDB(insertBlogData._id.toString(), AI_GENERATED_BLOG)
